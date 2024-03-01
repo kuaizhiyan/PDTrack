@@ -1,9 +1,9 @@
 # PDTrack: Finegrained reid tracking method by Part Querier.
 
-# Note
-This is an anonymized repository for ECCV2024, where all personal information is already hidden.
 
-The core code of this project is in `./PDTrack`.
+This is an **anonymized repository** for ECCV2024, where all personal information is already hidden.
+
+The core code of this project is in `./PDTrack/`.
 
 
 # Introduction
@@ -21,21 +21,14 @@ The core code of this project is in `./PDTrack`.
 **Note:**
  In this project we use the [YOLOX](https://arxiv.org/abs/2107.08430) pretrained models from [MMDetection](https://github.com/open-mmlab/mmdetection/tree/main/configs/yolox) without additional traning.
 
-## ReID
+## Re-Identification in MOT
 |  Model | Mem(MB) | mAP | Config | Download |
-| :-----:|:-------:|:---:|:------:|:--------:|
-|  Res50 | 99.44   |     |[config](./configs/reid/reid_r50_8xb32-6e_mot17train80_test-mot17val20.py) | [model]() |
-| Encoder-only |           |    | [config]()| [model]() |
-| Decoder-only |           |    | [config]()| [model]() |
-| PartDecoder| 118.70 |   | [config]()| [model]()            |
-
-
-**Note:**
-All pretrained models will be released after blind view.
-
-## Tracker
-
-
+| :-----|:-------:|:---:|:------:|:--------:|
+|  Res50 | 99.44   | 0.503|[config](./configs/reid/reid_r50_8xb32-6e_mot17train80_test-mot17val20.py) | [model]() |
+| ViT | 138.60 |0.523| [config](./PDTrack/configs/reid_ViT_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+| Decoder |  142.82 | 0.517 | [config](./PDTrack/configs/reid_Decoder_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+|Transformer-arch| ||[config](./PDTrack/configs/reid_Trans_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+| PartDecoder| 118.70 | **0.581** | [config](./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py)| [model]()            |
 
 
 # Running 

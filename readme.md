@@ -1,4 +1,4 @@
-# PQTrack: Finegrained reid tracking method by Part Querier.
+# PDTrack: Finegrained reid tracking method by Part Querier.
 
 # News
 

@@ -16,3 +16,4 @@ yolov3-mmgea/
 yolov3-mmgea+flip/
 yolov3-randomflip/
 *.pth
+.vscode/

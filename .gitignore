@@ -3,6 +3,7 @@ data/
 demo/
 docker/
 Experiments/
+experiments/
 fish_work_dir/
 GLIP/
 hf_models/
@@ -17,3 +18,4 @@ yolov3-mmgea+flip/
 yolov3-randomflip/
 *.pth
 .vscode/
+local_debug/

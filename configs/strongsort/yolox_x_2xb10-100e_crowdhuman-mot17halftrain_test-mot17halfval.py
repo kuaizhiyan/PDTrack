@@ -13,7 +13,7 @@ model = dict(
         type='Pretrained',
         checkpoint=  # noqa: E251
         # 'https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_x_8x8_300e_coco/yolox_x_8x8_300e_coco_20211126_140254-1ef88d67.pth'  # noqa: E501
-        '/home/kzy/project/mmdetection/workdirs/yolox_x_2xb10_crowdhuman-mot17half/best_coco_bbox_mAP_epoch_32_with_mosic.pth'
+        './workdirs/yolox_x_2xb10_crowdhuman-mot17half/best_coco_bbox_mAP_epoch_32_with_mosic.pth'
     ))
 
 train_pipeline = [

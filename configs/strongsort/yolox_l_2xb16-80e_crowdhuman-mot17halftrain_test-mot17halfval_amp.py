@@ -1,6 +1,6 @@
 _base_ = ['../yolox/yolox_l_8xb8-300e_coco.py']
 
-data_root = '/home/kzy/projects/mmdetection/data/MOT17/'
+data_root = './data/MOT17/'
 
 img_scale = (1440, 800)  # width, height
 batch_size = 16

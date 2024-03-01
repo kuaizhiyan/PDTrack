@@ -20,12 +20,14 @@ from mmcv.cnn import ConvModule
 from mmdet.models.necks import ChannelMapper
 
 @MODELS.register_module()
-class PartQuerier(BaseModule):
+class PartDecoder(BaseModule):
     """ Learn part features by part querier from feature maps.
     
     Args:
-        num_queries: int the number of part query
-    
+        num_queries (int): the number of part query.
+        
+    Return:
+        dict: the output hidden states of global queries and part queries.
     """
     
     def __init__(self,
@@ -37,7 +39,7 @@ class PartQuerier(BaseModule):
                  train_cfg: OptConfigType = None,
                  test_cfg: OptConfigType = None,
                  ) -> None:
-        super(PartQuerier,self).__init__()
+        super(PartDecoder,self).__init__()
         # process args
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
@@ -53,12 +55,7 @@ class PartQuerier(BaseModule):
         """Initialize layers except for backbone, neck and bbox_head."""
         self.positional_encoding = SinePositionalEncoding(
             **self.positional_encoding)
-        # self.encoder = DetrTransformerEncoder(**self.encoder)
         self.decoder = ConditionalDetrTransformerDecoder(**self.decoder)
-        # self.embed_dims = self.encoder.embed_dims
-        # NOTE The embed_dims is typically passed from the inside out.
-        # For example in DETR, The embed_dims is passed as
-        # self_attn -> the first encoder layer -> encoder -> detector.
         self.query_embedding = nn.Embedding(self.num_queries, self.embed_dims)
 
         num_feats = self.positional_encoding.num_feats
@@ -72,11 +69,6 @@ class PartQuerier(BaseModule):
         for p in self.decoder.parameters():
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
-    
-        # for coder in self.encoder, self.decoder:
-        #     for p in coder.parameters():
-        #         if p.dim() > 1:
-        #             nn.init.xavier_uniform_(p)
     
     def pre_transformer(
             self,
@@ -129,13 +121,13 @@ class PartQuerier(BaseModule):
             all_feat = None
             all_pos_embed = None
             for i,feat in enumerate(img_feats):
-                feat = img_feats[i]  # NOTE img_feats contains only one feature.   # [4,3,32,16]
+                feat = img_feats[i]  # NOTE img_feats contains only one feature.   
                 batch_size, feat_dim, _, _ = feat.shape
                 
                 # construct binary masks which for the transformer.    
                 masks = None
                 # [batch_size, embed_dim, h, w]
-                pos_embed = self.positional_encoding(masks, input=feat) # feat[1,2048,8,4] pos_emb [1,256,8,4]
+                pos_embed = self.positional_encoding(masks, input=feat) 
             
                 # use `view` instead of `flatten` for dynamically exporting to ONNX
                 # [bs, c, h, w] -> [bs, h*w, c]
@@ -263,43 +255,43 @@ class PartQuerier(BaseModule):
     def forward(self,img_feats):    
         
         encoder_inputs_dict, decoder_inputs_dict = self.pre_transformer(
-            img_feats)  # img_feats tuple([1,256,25,38]) samples[..,img_shape=800,1199]
-        # encoder_inputs:{feat:[1,950,256],feat_mask:None,feat_pos[1,950,256]} decoder:{'mem_pos'[1,950,256]}
-         
-        # 不通过 ENcoder 了
-        # encoder_outputs_dict = self.forward_encoder(**encoder_inputs_dict) {'memory'[1,950,256]}
+            img_feats) 
         encoder_inputs_dict = {'memory':encoder_inputs_dict['feat']}
         tmp_dec_in, head_inputs_dict = self.pre_decoder(**encoder_inputs_dict)
-        decoder_inputs_dict.update(tmp_dec_in)  # {query_pos[1,300,256],query[1,300,256],memory[1,950,256]}
-        # decoder_inputs_dict {query,query_pos,memory,memory_pos}
-        decoder_outputs_dict = self.forward_decoder(**decoder_inputs_dict)  #{hidden_state[6,1,300,256],reference[1,300,2]}
+        decoder_inputs_dict.update(tmp_dec_in)  
+        decoder_outputs_dict = self.forward_decoder(**decoder_inputs_dict) 
         head_inputs_dict.update(decoder_outputs_dict)
         
-        return head_inputs_dict #dict{hidden_state[6,1,300,256],reference[1,300,2]}
+        return head_inputs_dict 
         
     
 @MODELS.register_module()
-class PartQuerier_neck(BaseModule):
+class PartDecoder_neck(BaseModule):
     """
-    The PartQuerier serves as the neck of the ReID network.
+    The PartDecoder serves as the neck of the ReID network.
     The data processing flow is as :
-         +-----------+
-         |PartQuerier|
-         +-----------+
+        +----------------+
+        |Pyramid Sampler |
+        +----------------+
                |
                V
-        +--------------+
-        |PartAggregator|
-        +--------------+
+        +-----------+
+        |PartDecoder|
+        +-----------+
                |
                V
-       +----------------+ 
-       |GlobalAvgPooling|
-       +----------------+ 
+        Get the global query for further operation...
+    
+    Args:
+        embed_dims (int): hidden feature dimension.
+        with_agg (bool): whether operate pyramid sample.
+        decoder (OptConfigType) : config of decoder.
+        positional_encoding (OptConfigType) :config of positional embedding.
+        num_queries (int): the number of part queries, not include global query.
+        channel_mapper (OptConfigType): config of pyramid sampler.
     
     Return:
-        out: tuple of outputs
-    
+        tuple: tuple of output hidden state (global query) of each layer.
     """
     
     def __init__(self, 
@@ -313,9 +305,9 @@ class PartQuerier_neck(BaseModule):
                  test_cfg: OptConfigType = None,
                  init_cfg: OptConfigType = None
                  )->tuple:
-        super(PartQuerier_neck,self).__init__(init_cfg)
+        super(PartDecoder_neck,self).__init__(init_cfg)
         self.num_queries = num_queries
-        self.PartQuerier = PartQuerier(    
+        self.PartDecoder = PartDecoder(    
                                        embed_dims=embed_dims,
                                        decoder=decoder,
                                        with_agg=with_agg,
@@ -323,19 +315,17 @@ class PartQuerier_neck(BaseModule):
                                        num_queries=num_queries,
                                        train_cfg=train_cfg,
                                        test_cfg=test_cfg)
-        self.channel_mapper = ChannelMapper(**channel_mapper)
+        self.pyramid_sampler = ChannelMapper(**channel_mapper)
    
     def init_weights(self) -> None:
         return super().init_weights()
 
     
-    def forward(self,x):    # x ([128,1024,16,8],)
-        out = self.channel_mapper(x)  # mapper_out:0([128,256,16,8])
-        # 这里返回 [num_layers,num_queries,dim]
-        out = self.PartQuerier(out) # out{'hidden_states'[4,128,129,256],'references'[1,128,2]}
-        # 取最后一层，每个 batch 第一个 token 做分类
-        hidden_state = out['hidden_states'][-1][:,0] # hidden_state : the last layer output:[dim=128,num_queries=256,hw=256]
-        # hidden_state = hidden_state.unsqueeze(0)
+    def forward(self,x):    
+        # Pyramid feature sampler 
+        out = self.pyramid_sampler(x)   #  [num_layers,num_queries+1,dim]
+        out = self.PartDecoder(out) # out{'hidden_states'[num_layers,batch,num_queries+1,dim],'references'[1,batch,2]}
+        hidden_state = out['hidden_states'][-1][:,0] 
         return (hidden_state,)
         
     

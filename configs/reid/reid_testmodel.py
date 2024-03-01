@@ -25,8 +25,8 @@ model = dict(
         dict(
     type='TestModel_neck',
         num_queries=256,
-        with_encoder=False,
-        with_decoder=True,
+        with_encoder=True,
+        with_decoder=False,
         with_conditionpos=False,
         with_agg=False,
         channel_mapper=dict(

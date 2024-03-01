@@ -4,7 +4,7 @@ _base_ = [
 ]
 pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_tiny_patch4_window7_224.pth'  # noqa
 # lang_model_name = 'bert-base-uncased'
-lang_model_name = '/home/kzy/project/mmdetection/hf_models/bert_base_uncased'
+lang_model_name = './hf_models/bert_base_uncased'
 
 model = dict(
     type='GroundingDINO',

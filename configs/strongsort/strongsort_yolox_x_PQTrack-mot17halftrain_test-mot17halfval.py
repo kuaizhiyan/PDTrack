@@ -49,7 +49,7 @@ model = dict(
             positional_encoding=dict(num_feats=128, normalize=True),    # num_feats = len(x)+len(y)
             init_config=dict(
                 type='Pretrained',
-                checkpoint='/home/kzy/project/mmdetection/work_dirs/reid_part_decoder/best_reid-metric_mAP_iter_50000.pth'
+                checkpoint='./work_dirs/reid_part_decoder/best_reid-metric_mAP_iter_50000.pth'
             )
         ),
     cmc=dict(

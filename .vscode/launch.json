@@ -1,0 +1,51 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "test_model",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "./tools/train.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/kzy/project/mmdetection/",
+            "args": [
+                "./PartQuerier/configs/testmodel.py"
+            ]
+        },
+        // {
+        //     "name": "data_transform_visualization",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "tools/analysis_tools/browse_dataset.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": [
+        //         "/home/kzy/project/mmdetection/configs/yolo/yolov3_d53_8xb8-320-273e_coco.py",
+        //         "--output-dir",
+        //         "./work_dirs/aug_vis"
+        //     ]
+        // },
+        // {
+        //     "name": "test_zero_shot_fish",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "tools/test.py",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": true,
+        //     "args": [
+        //         "configs/mm_grounding_dino/grounding_dino_swin-t_finetune_8xb4_20e_fish.py",
+        //         "grounding_dino_swin-t_pretrain_obj365_goldg_grit9m_v3det_20231204_095047-b448804b.pth"
+        //     ]
+        // },
+    ]
+}

@@ -18,6 +18,74 @@ from mmdet.models.layers import ResLayer,SimplifiedBasicBlock
 from mmdet.models.reid import GlobalAveragePooling
 from mmcv.cnn import ConvModule
 from mmdet.models.necks import ChannelMapper
+from mmdet.models.layers.transformer.utils import  coordinate_to_encoding
+
+
+class PDTransformerDecoder(ConditionalDetrTransformerDecoder):
+    """The decoder part of Part Decoder."""
+
+    def forward(self,
+                query: Tensor,
+                key: Tensor = None,
+                query_pos: Tensor = None,
+                key_pos: Tensor = None,
+                key_padding_mask: Tensor = None):
+        """Forward function of decoder.
+
+        Args:
+            query (Tensor): The input query with shape
+                (bs, num_queries, dim).
+            key (Tensor): The input key with shape (bs, num_keys, dim) If
+                `None`, the `query` will be used. Defaults to `None`.
+            query_pos (Tensor): The positional encoding for `query`, with the
+                same shape as `query`. If not `None`, it will be added to
+                `query` before forward function. Defaults to `None`.
+            key_pos (Tensor): The positional encoding for `key`, with the
+                same shape as `key`. If not `None`, it will be added to
+                `key` before forward function. If `None`, and `query_pos`
+                has the same shape as `key`, then `query_pos` will be used
+                as `key_pos`. Defaults to `None`.
+            key_padding_mask (Tensor): ByteTensor with shape (bs, num_keys).
+                Defaults to `None`.
+        Returns:
+            List[Tensor]: forwarded results with shape (num_decoder_layers,
+            bs, num_queries, dim) if `return_intermediate` is True, otherwise
+            with shape (1, bs, num_queries, dim). References with shape
+            (bs, num_queries, 2).
+        """
+        global_query_pos = (query_pos[:,0,:]).unsqueeze(1)     # fetch out the global query. global_query_pos[bs,1,dims]
+        part_query_pos = query_pos[:,1:,:]                     # fetch out part queries. part_query_pos[bs,num_queries-1,dims]
+        reference_unsigmoid = self.ref_point_head(      # 2d coord embedding.  query_pos[bs,num_queries,dims]->reference_unsigmoid[bs,num_queries,2]
+            part_query_pos)  
+        reference = reference_unsigmoid.sigmoid()       # sigmoid. reference[bs, num_queries, 2]
+        reference_xy = reference[..., :2] # reference_xy [bs, num_queries, 2]
+        intermediate = []
+        for layer_id, layer in enumerate(self.layers):
+            if layer_id == 0:
+                pos_transformation = 1
+            else:
+                pos_transformation = self.query_scale(query)
+            # get sine embedding for the query reference
+            ref_sine_embed = coordinate_to_encoding(coord_tensor=reference_xy)  # ref_sine_embed:[bs,num_queries,dims] （p_s）# concat+global embedding
+            ref_sine_embed = torch.concat([global_query_pos,ref_sine_embed],dim=1)
+            # apply transformation
+            ref_sine_embed = ref_sine_embed * pos_transformation  # ref_sine_embed:[bs,num_queries,dims]·1|[bs,num_queries,dims]=[bs,num_queries,dims]
+            query = layer(
+                query,
+                key=key,
+                query_pos=query_pos,
+                key_pos=key_pos,
+                key_padding_mask=key_padding_mask,
+                ref_sine_embed=ref_sine_embed,
+                is_first=(layer_id == 0))
+            if self.return_intermediate:
+                intermediate.append(self.post_norm(query))
+
+        if self.return_intermediate:
+            return torch.stack(intermediate), reference
+
+        query = self.post_norm(query)
+        return query.unsqueeze(0), reference
 
 @MODELS.register_module()
 class PartDecoder(BaseModule):
@@ -55,7 +123,7 @@ class PartDecoder(BaseModule):
         """Initialize layers except for backbone, neck and bbox_head."""
         self.positional_encoding = SinePositionalEncoding(
             **self.positional_encoding)
-        self.decoder = ConditionalDetrTransformerDecoder(**self.decoder)
+        self.decoder = PDTransformerDecoder(**self.decoder)
         self.query_embedding = nn.Embedding(self.num_queries, self.embed_dims)
 
         num_feats = self.positional_encoding.num_feats

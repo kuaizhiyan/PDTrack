@@ -93,6 +93,7 @@ train_dataloader = None
 val_dataloader = dict(
     # Now StrongSORT only support video_based sampling
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    batch_size=1,
     dataset=dict(
         _delete_=True,
         type=dataset_type,

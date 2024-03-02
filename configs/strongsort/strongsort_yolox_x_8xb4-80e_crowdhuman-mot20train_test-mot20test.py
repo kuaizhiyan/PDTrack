@@ -29,6 +29,7 @@ test_pipeline = [
 ]
 
 val_dataloader = dict(
+    batch_size=1,
     dataset=dict(
         data_root='data/MOT17',
         ann_file='annotations/train_cocoformat.json',

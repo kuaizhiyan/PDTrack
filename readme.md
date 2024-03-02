@@ -24,11 +24,11 @@ The core code of this project is in `./PDTrack/`.
 ## Re-Identification in MOT
 |  Model | Mem(MB) | mAP | Config | Download |
 | :-----|:-------:|:---:|:------:|:--------:|
-|  Res50 | 99.44   | 0.503|[config](./configs/reid/reid_r50_8xb32-6e_mot17train80_test-mot17val20.py) | [model]() |
-| ViT | 138.60 |0.523| [config](./PDTrack/configs/reid_ViT_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
-| Decoder |  142.82 | 0.517 | [config](./PDTrack/configs/reid_Decoder_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
-|Transformer-arch| ||[config](./PDTrack/configs/reid_Trans_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
-| PartDecoder| 118.70 | **0.581** | [config](./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py)| [model]()            |
+|  Res50 | 99.44   | 50.3|[config](./configs/reid/reid_r50_8xb32-6e_mot17train80_test-mot17val20.py) | [model]() |
+| ViT | 138.60 |52.3| [config](./PDTrack/configs/reid_ViT_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+| Decoder |  142.82 | 51.7 | [config](./PDTrack/configs/reid_Decoder_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+|Transformer-arch| 136.90||[config](./PDTrack/configs/reid_Trans_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+| PartDecoder| 118.70 | **58.1** | [config](./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py)| [model]()            |
 
 
 # Running 

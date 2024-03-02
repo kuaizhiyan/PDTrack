@@ -313,7 +313,7 @@ class PartQuerier_neck(BaseModule):
                  test_cfg: OptConfigType = None,
                  init_cfg: OptConfigType = None
                  )->tuple:
-        super(PartQuerier_neck,self).__init__(init_cfg)
+        super(PartQuerier_neck,self).__init__(init_cfg=init_cfg)
         self.num_queries = num_queries
         self.PartQuerier = PartQuerier(    
                                        embed_dims=embed_dims,
@@ -324,9 +324,10 @@ class PartQuerier_neck(BaseModule):
                                        train_cfg=train_cfg,
                                        test_cfg=test_cfg)
         self.channel_mapper = ChannelMapper(**channel_mapper)
-   
-    def init_weights(self) -> None:
-        return super().init_weights()
+        # self.init_cfg = init_cfg
+        
+    # def init_weights(self) -> None:
+    #     return super().init_weights(self.init_cfg)
 
     
     def forward(self,x):    # x ([128,1024,16,8],)

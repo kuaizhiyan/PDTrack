@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "test tracking",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "tools/test_tracking.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/kzy/project/mmdetection",
+            "args": [
+                "configs/strongsort/strongsort_yolox_x_PQTrack-mot17halftrain_test-mot17halfval.py"
+            ]
+        },
+        {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",

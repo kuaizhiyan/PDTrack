@@ -47,10 +47,10 @@ model = dict(
                         cross_attn=True))
             ),
             positional_encoding=dict(num_feats=128, normalize=True),    # num_feats = len(x)+len(y)
-            init_config=dict(
-                type='Pretrained',
-                checkpoint='./work_dirs/reid_part_decoder/best_reid-metric_mAP_iter_50000.pth'
-            )
+            # init_config=dict(
+            #     type='Pretrained',
+            #     checkpoint='/home/kzy/project/mmdetection/Experiments/part_decoder_b64/best_reid-metric_mAP_iter_3000.pth'
+            # )
         ),
     cmc=dict(
         type='CameraMotionCompensation',

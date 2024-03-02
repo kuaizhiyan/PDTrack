@@ -111,7 +111,7 @@ train_dataloader = dict(
 
 val_dataloader = dict(
     batch_size=1,
-    num_workers=2,
+    num_workers=1,
     dataset=dict(
         data_root=data_root,
         ann_file='annotations/half-val_cocoformat.json',
@@ -125,7 +125,7 @@ max_epochs = 80
 num_last_epochs = 10
 interval = 5
 
-train_cfg = dict(max_epochs=max_epochs, val_begin=75, val_interval=1)
+train_cfg = dict(max_epochs=max_epochs, val_begin=10, val_interval=1)
 
 # optimizer
 # default 8 gpu

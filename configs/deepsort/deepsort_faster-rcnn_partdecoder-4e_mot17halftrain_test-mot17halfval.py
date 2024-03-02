@@ -39,31 +39,37 @@ model = dict(
         pad_size_divisor=32),
     detector=detector,
     reid=dict(
-        type='BaseReID',
-        data_preprocessor=dict(type='mmpretrain.ClsDataPreprocessor'),
-        backbone=dict(
-            type='mmpretrain.ResNet',
-            depth=50,
-            num_stages=4,
-            out_indices=(3, ),
-            style='pytorch'),
-        neck=dict(type='GlobalAveragePooling', kernel_size=(8, 4), stride=1),
-        head=dict(
-            type='LinearReIDHead',
-            num_fcs=1,
-            in_channels=2048,
-            fc_channels=1024,
-            out_channels=128,
-            num_classes=380,
-            loss_cls=dict(type='mmpretrain.CrossEntropyLoss', loss_weight=1.0),
-            loss_triplet=dict(type='TripletLoss', margin=0.3, loss_weight=1.0),
-            norm_cfg=dict(type='BN1d'),
-            act_cfg=dict(type='ReLU')),
+    type='PartQuerier_neck',
+        num_queries=128,
+        embed_dims=256,
+        with_agg=True,
+        channel_mapper=dict(
+            in_channels=[512,1024,2048],   # the output feature map dim
+            out_channels=256,
+            kernel_size=1,
+            norm_cfg=dict(type='BN'),
+            act_cfg=dict(type='LeakyReLU')
+            ),
+        decoder=dict(
+            num_layers=4,
+            layer_cfg=dict(
+                self_attn_cfg=dict(
+                    embed_dims=256,
+                    num_heads=8,
+                    attn_drop=0.1,
+                    cross_attn=False),
+                cross_attn_cfg=dict(
+                    embed_dims=256,
+                    num_heads=8,
+                    attn_drop=0.1,
+                    cross_attn=True))
+        ),
+        positional_encoding=dict(num_feats=128, normalize=True),    # num_feats = len(x)+len(y)
         init_cfg=dict(
-            type='Pretrained',
-            checkpoint=  # noqa: E251
-            'https://download.openmmlab.com/mmtracking/mot/reid/tracktor_reid_r50_iter25245-a452f51f.pth'  # noqa: E501
-        )),
+            type="Pretrained",
+            checkpoint="/home/kzy/project/mmdetection/Experiments/part_decoder_b64/iter_2000.pth"
+        )
+),
     tracker=dict(
         type='SORTTracker',
         motion=dict(type='KalmanFilter', center_only=False),

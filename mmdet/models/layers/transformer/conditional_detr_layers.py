@@ -60,10 +60,10 @@ class ConditionalDetrTransformerDecoder(DetrTransformerDecoder):
             with shape (1, bs, num_queries, dim). References with shape
             (bs, num_queries, 2).
         """
-        reference_unsigmoid = self.ref_point_head(      # 2d coord. embedding
-            query_pos)  # [bs, num_queries, 2]
-        reference = reference_unsigmoid.sigmoid()       # sigmoid
-        reference_xy = reference[..., :2]
+        reference_unsigmoid = self.ref_point_head(      # 2d coord embedding.  query_pos[bs,num_queries,dims] ->[bs,num_queries,2]
+            query_pos)  #  reference_unsigmoid  [bs, num_queries, 2] [32,256,2]
+        reference = reference_unsigmoid.sigmoid()       # sigmoid [bs, num_queries, 2]
+        reference_xy = reference[..., :2] # reference_xy [bs, num_queries, 2]
         intermediate = []
         for layer_id, layer in enumerate(self.layers):
             if layer_id == 0:
@@ -71,9 +71,9 @@ class ConditionalDetrTransformerDecoder(DetrTransformerDecoder):
             else:
                 pos_transformation = self.query_scale(query)
             # get sine embedding for the query reference
-            ref_sine_embed = coordinate_to_encoding(coord_tensor=reference_xy)  ########### num_feats default : 128
+            ref_sine_embed = coordinate_to_encoding(coord_tensor=reference_xy)  # ref_sine_embed:[bs,num_queries,dims] （p_s）# concat+global embedding
             # apply transformation
-            ref_sine_embed = ref_sine_embed * pos_transformation
+            ref_sine_embed = ref_sine_embed * pos_transformation  # ref_sine_embed:[bs,num_queries,dims]·1|[bs,num_queries,dims]=[bs,num_queries,dims]
             query = layer(
                 query,
                 key=key,

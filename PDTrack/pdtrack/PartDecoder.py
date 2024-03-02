@@ -164,13 +164,13 @@ class PartDecoder(BaseModule):
               and 'memory_pos'.
         """
         if not self.with_agg:
-            feat = img_feats[-1]  # NOTE img_feats contains only one feature.   # [4,3,32,16]
+            feat = img_feats[-1]  # NOTE fetch out the last layer
             batch_size, feat_dim, _, _ = feat.shape
             
             # construct binary masks which for the transformer.    
             masks = None
             # [batch_size, embed_dim, h, w]
-            pos_embed = self.positional_encoding(masks, input=feat) # feat[1,2048,8,4] pos_emb [1,256,8,4]
+            pos_embed = self.positional_encoding(masks, input=feat) # feat[bs,dim(2048),h,w] ->pos_emb [bs,embed_dim(256),h,w]
         
             # use `view` instead of `flatten` for dynamically exporting to ONNX
             # [bs, c, h, w] -> [bs, h*w, c]
@@ -273,9 +273,9 @@ class PartDecoder(BaseModule):
               support 'two stage' or 'query selection' strategies.
         """
 
-        batch_size = memory.size(0)  # (bs, num_feat_points, dim)
+        batch_size = memory.size(0)  # [bs, num_feat_points, dim]
         query_pos = self.query_embedding.weight
-        # (num_queries, dim) -> (bs, num_queries, dim)
+        # [num_queries, dim] -> [bs, num_queries, dim]
         query_pos = query_pos.unsqueeze(0).repeat(batch_size, 1, 1)
         query = torch.zeros_like(query_pos)
 

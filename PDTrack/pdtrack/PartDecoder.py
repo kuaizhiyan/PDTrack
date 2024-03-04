@@ -66,7 +66,7 @@ class PDTransformerDecoder(ConditionalDetrTransformerDecoder):
             else:
                 pos_transformation = self.query_scale(query)
             # get sine embedding for the query reference
-            ref_sine_embed = coordinate_to_encoding(coord_tensor=reference_xy)  # ref_sine_embed:[bs,num_queries,dims] （p_s）# concat+global embedding
+            ref_sine_embed = coordinate_to_encoding(coord_tensor=reference_xy)  # ref_sine_embed:[bs,num_queries,dims] （p_s）# concat global embedding
             ref_sine_embed = torch.concat([global_query_pos,ref_sine_embed],dim=1)
             # apply transformation
             ref_sine_embed = ref_sine_embed * pos_transformation  # ref_sine_embed:[bs,num_queries,dims]·1|[bs,num_queries,dims]=[bs,num_queries,dims]

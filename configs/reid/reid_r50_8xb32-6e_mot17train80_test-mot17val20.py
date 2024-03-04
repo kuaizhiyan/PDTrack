@@ -64,7 +64,7 @@ param_scheduler = [
 default_hooks = dict(
     checkpoint=dict(
         by_epoch=False,
-        interval=2000,
+        interval=3000,
         save_best='auto'
     )
 )
@@ -75,7 +75,7 @@ default_hooks = dict(
 train_dataloader = dict(
     sampler=dict(type='InfiniteSampler'),
     dataset=dict(
-        triplet_sampler=dict(num_ids=64, ins_per_id=4),
+        triplet_sampler=dict(num_ids=32, ins_per_id=4),
 ))
 train_cfg = dict(
     type='IterBasedTrainLoop',

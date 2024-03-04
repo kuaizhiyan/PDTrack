@@ -14,7 +14,7 @@ model = dict(
         type='mmpretrain.ResNet',
         depth=50,
         num_stages=4,
-        out_indices=(1,2,3,),
+        out_indices=(2,3,),
         style='pytorch',
         # init_cfg=dict(
         #     type='Pretrained',
@@ -24,20 +24,20 @@ model = dict(
     neck=
         dict(
     type='TestModel_neck',
-        num_queries=129,
+        num_queries=64,
         with_encoder=False,
         with_decoder=True,
         with_conditionpos=True,
         with_agg=True,
         channel_mapper=dict(
-            in_channels=[512,1024,2048],   # the output feature map dim
+            in_channels=[1024,2048],   # the output feature map dim
             out_channels=256,
             kernel_size=1,
             norm_cfg=dict(type='BN'),
             act_cfg=dict(type='LeakyReLU')
             ),
         encoder=dict(
-            num_layers=4,
+            num_layers=3,
             layer_cfg=dict(  # DetrTransformerEncoderLayer
                 self_attn_cfg=dict(  # MultiheadAttention
                     embed_dims=256,
@@ -52,7 +52,7 @@ model = dict(
                     act_cfg=dict(type='ReLU', inplace=True)))
         ),
         decoder=dict(
-            num_layers=4,
+            num_layers=3,
             layer_cfg=dict(
                 self_attn_cfg=dict(
                     embed_dims=256,

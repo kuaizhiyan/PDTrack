@@ -83,3 +83,20 @@ train_dataloader = None
 train_cfg = None
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
+
+val_dataloader = dict(
+    batch_size=1,
+    num_workers=2,
+    persistent_workers=True,
+    # Now we support two ways to test, image_based and video_based
+    # if you want to use video_based sampling, you can use as follows
+    # sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    sampler=dict(type='TrackImgSampler'),  # image-based sampling
+    dataset=dict(
+        type='MOTChallengeDataset',
+        data_root='data/DanceTrack',
+        ann_file='annotations/test_cocoformat.json',
+        data_prefix=dict(img_path='test'),
+        test_mode=True,
+        ))
+test_dataloader = val_dataloader

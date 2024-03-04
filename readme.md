@@ -10,7 +10,10 @@ The core code of this project is in `./PDTrack/`.
 The quality of appearance feature extraction plays a decisive role in Multi-Object Tracking(MOT). Recent methods adpot a variety of attention methods to enhance detail representation. But when extreme cases like random occlusions, light variations and similar appearances occur, relying on implicit learning style will be difficult
 to maintain feature extraction quality and convergence speed. To this end, we decompose the global feature extraction problem into local fine-grained extraction subproblems which achieves a balance between effectiveness and efficiency.In detail, we design a decoder-only Part Decoder With novel learnable queries formulation. It introduces positional priors to achieve part-by-part finer-grained feature pooling and aggregation. To make it sensitive to pixel changes on initial image, we replace encoder part by Pyramid Sampler. It samples primitive information at multi-scale feature layers and project them into the same embeddding space, as the better corpus of Part Decoder. At last, we propose a training data augmentaion method Gaussian Erasing Augmentation. It implements an anisotropic Gaussian kernel to make occlusion masks and provide finer-grained training data. Our model achieves 15% mAP boost than SOTA trackers’ ReID network 
 and 5$\times$ faster convergence than comparable architectures.
-
+<center class="half">
+<img src='docs/PartDecoder.svg' width=300/>
+<img src='docs/loss_curve.svg' width=300/>
+</center>
 # Models
 
 ## Detector

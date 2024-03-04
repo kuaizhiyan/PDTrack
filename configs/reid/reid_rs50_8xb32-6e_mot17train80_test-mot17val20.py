@@ -9,7 +9,7 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         to_rgb=True),
     backbone=dict(
-        type='mmpretrain.ResNet',
+        type='mmpretrain.ResNeSt',
         depth=50,
         num_stages=4,
         out_indices=(3, ),
@@ -75,7 +75,7 @@ default_hooks = dict(
 train_dataloader = dict(
     sampler=dict(type='InfiniteSampler'),
     dataset=dict(
-        triplet_sampler=dict(num_ids=16, ins_per_id=4),
+        triplet_sampler=dict(num_ids=32, ins_per_id=4),
 ))
 train_cfg = dict(
     type='IterBasedTrainLoop',

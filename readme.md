@@ -1,15 +1,15 @@
-# PDTrack: Finegrained reid tracking method by Part Querier.
+# FARE: A Finer-grained and Fast Converging Appearance Representation Extractor in MOT
 
 
 This is an **anonymized repository** for ECCV2024, where all personal information is already hidden.
 
-The core code of this project is in `./PDTrack/`.
+The core code of this project is in `./FARE/`.
 
 
 # Abstract
-The quality of appearance feature extraction plays a decisive role in Multi-Object Tracking(MOT). Recent methods adpot a variety of attention methods to enhance detail representation. But when extreme cases like random occlusions, light variations and similar appearances occur, relying on implicit learning style will be difficult
-to maintain feature extraction quality and convergence speed. To this end, we decompose the global feature extraction problem into local fine-grained extraction subproblems which achieves a balance between effectiveness and efficiency.In detail, we design a decoder-only Part Decoder With novel learnable queries formulation. It introduces positional priors to achieve part-by-part finer-grained feature pooling and aggregation. To make it sensitive to pixel changes on initial image, we replace encoder part by Pyramid Sampler. It samples primitive information at multi-scale feature layers and project them into the same embeddding space, as the better corpus of Part Decoder. At last, we propose a training data augmentaion method Gaussian Erasing Augmentation. It implements an anisotropic Gaussian kernel to make occlusion masks and provide finer-grained training data. Our model achieves 15% mAP boost than SOTA trackers’ ReID network 
-and 5$\times$ faster convergence than comparable architectures.
+The quality of appearance feature extraction plays a decisive role in Multi-Object Tracking(MOT). Recent methods adopt a variety of attention methods to enhance detail representation. But when extreme cases like random occlusions, light variations, and similar appearances occur, relying on an implicit learning style will make it difficult
+to maintain feature extraction quality and convergence speed. To this end, we decompose the global feature extraction problem into local fine-grained extraction subproblems which achieves a balance between effectiveness and efficiency. In detail, we design a decoder-only Part Decoder with novel learnable query formulation. It introduces positional priors to achieve part-by-part finer-grained feature pooling and aggregation. To make it sensitive to pixel changes on the initial image, we replace the encoder part with a Pyramid Sampler. It samples primitive information at multi-scale feature layers and projects them into the same embedding space, as the better corpus of Part Decoder. At last, we propose a training data augmentation method Gaussian Erasing Augmentation. It implements an anisotropic Gaussian kernel to make occlusion masks and provide finer-grained training data. Our model achieves +7.94 mAP than SOTA trackers’ ReID network 
+and 4.8x faster convergence than comparable architectures.
 <center class="half">
 <img src='docs/PartDecoder.svg' width=300/>
 <img src='docs/loss_curve.svg' width=300/>
@@ -30,10 +30,10 @@ and 5$\times$ faster convergence than comparable architectures.
 |  Model | Mem(MB) | mAP | Config | Download |
 | :-----|:-------:|:---:|:------:|:--------:|
 |  Res50 | 99.44   | 50.3|[config](./configs/reid/reid_r50_8xb32-6e_mot17train80_test-mot17val20.py) | [model]() |
-| ViT | 138.60 |52.3| [config](./PDTrack/configs/reid_ViT_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+| ViT | 138.60 |51.20| [config](./PDTrack/configs/reid_ViT_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
 | Decoder |  142.82 | 51.7 | [config](./PDTrack/configs/reid_Decoder_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
-|Transformer-arch| 136.90||[config](./PDTrack/configs/reid_Trans_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
-| PartDecoder| 118.70 | **58.1** | [config](./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py)| [model]()            |
+|Transformer-arch| 136.90|53.40|[config](./PDTrack/configs/reid_Trans_4xb32-14000iter_mot17train80_test-mot17val20.py)| [model]() |
+| PartDecoder| 118.70 | **58.24** | [config](./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py)| [model]()            |
 
 
 # Running 
@@ -127,11 +127,11 @@ Train extral detector with 8 GPUs on crowdhuman:
 sh tools/dist_train.sh configs/strongsort/yolox_x_8xb4-80e_crowdhuman-mot17halftrain_test-mot17halfval.py 8 --work-dir ./experiments
 ```
 
-## Testing
+<!-- ## Testing
 Test on MOT17-half:
 ```
 sh tools/dist_test.sh  projects/configs/xxxxxx 8 --eval bbox
-```
+``` -->
 
 # Cite
 

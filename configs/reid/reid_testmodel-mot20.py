@@ -13,6 +13,6 @@ test_dataloader = val_dataloader
 train_cfg = dict(
     type='IterBasedTrainLoop',
     max_iters=1400000,
-    val_interval=10000,
+    val_interval=100000,
 )
 

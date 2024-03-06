@@ -75,7 +75,7 @@ default_hooks = dict(
 train_dataloader = dict(
     sampler=dict(type='InfiniteSampler'),
     dataset=dict(
-        triplet_sampler=dict(num_ids=16, ins_per_id=4),
+        triplet_sampler=dict(num_ids=32, ins_per_id=4),
 ))
 train_cfg = dict(
     type='IterBasedTrainLoop',

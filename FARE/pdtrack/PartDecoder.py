@@ -334,7 +334,7 @@ class PartDecoder(BaseModule):
         
     
 @MODELS.register_module()
-class PartDecoder_neck(BaseModule):
+class FARE(BaseModule):
     """
     The PartDecoder serves as the neck of the ReID network.
     The data processing flow is as :
@@ -373,7 +373,7 @@ class PartDecoder_neck(BaseModule):
                  test_cfg: OptConfigType = None,
                  init_cfg: OptConfigType = None
                  )->tuple:
-        super(PartDecoder_neck,self).__init__(init_cfg)
+        super(FARE,self).__init__(init_cfg)
         self.num_queries = num_queries
         self.PartDecoder = PartDecoder(    
                                        embed_dims=embed_dims,

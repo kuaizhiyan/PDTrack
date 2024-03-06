@@ -17,7 +17,7 @@ model = dict(
         style='pytorch',
         ),
     neck=dict(
-        type='PartQuerier_neck',
+        type='FEAR',
             num_queries=129,
             embed_dims=256,
             with_agg=False,

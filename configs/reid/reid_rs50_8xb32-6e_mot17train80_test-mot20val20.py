@@ -1,5 +1,5 @@
 _base_ = [
-    './reid_testmodel.py'
+    './reid_rs50_8xb32-6e_mot17train80_test-mot17val20.py'
 ]
 
 model = dict(head=dict(num_classes=1701))
@@ -15,4 +15,3 @@ train_cfg = dict(
     max_iters=1400000,
     val_interval=30000,
 )
-

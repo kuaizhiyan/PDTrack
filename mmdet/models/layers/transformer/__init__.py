@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .conditional_detr_layers import (ConditionalDetrTransformerDecoder,
-                                      ConditionalDetrTransformerDecoderLayer)
+                                      ConditionalDetrTransformerDecoderLayer,
+                                      MyConditionalDetrTransformerDecoder,MyConditionalDetrTransformerDecoderLayer)
 from .dab_detr_layers import (DABDetrTransformerDecoder,
                               DABDetrTransformerDecoderLayer,
                               DABDetrTransformerEncoder)

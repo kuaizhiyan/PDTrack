@@ -19,9 +19,9 @@ from mmdet.models.reid import GlobalAveragePooling
 from mmcv.cnn import ConvModule
 from mmdet.models.necks import ChannelMapper
 from mmdet.models.layers.transformer.utils import  coordinate_to_encoding
+from mmdet.models.layers.transformer.conditional_detr_layers import MyConditionalDetrTransformerDecoder
 
-
-class PartDecoder(ConditionalDetrTransformerDecoder):
+class PartDecoder(MyConditionalDetrTransformerDecoder):
     """Part Decoder."""
 
     def forward(self,
@@ -60,6 +60,7 @@ class PartDecoder(ConditionalDetrTransformerDecoder):
         reference = reference_unsigmoid.sigmoid()       # sigmoid. reference[bs, num_queries, 2]
         reference_xy = reference[..., :2] # reference_xy [bs, num_queries, 2]
         intermediate = []
+        ca_pos_att_layers = []
         for layer_id, layer in enumerate(self.layers):
             if layer_id == 0:
                 pos_transformation = 1
@@ -70,7 +71,7 @@ class PartDecoder(ConditionalDetrTransformerDecoder):
             ref_sine_embed = torch.concat([global_query_pos,ref_sine_embed],dim=1)
             # apply transformation
             ref_sine_embed = ref_sine_embed * pos_transformation  # ref_sine_embed:[bs,num_queries,dims]·1|[bs,num_queries,dims]=[bs,num_queries,dims]
-            query = layer(
+            query,ca_pos_att = layer(
                 query,
                 key=key,
                 query_pos=query_pos,
@@ -80,9 +81,13 @@ class PartDecoder(ConditionalDetrTransformerDecoder):
                 is_first=(layer_id == 0))
             if self.return_intermediate:
                 intermediate.append(self.post_norm(query))
+                
+            ca_pos_att_layers.append(ca_pos_att)
 
+        ca_pos_att_socre_layers = torch.stack(ca_pos_att_layers)
+        torch.save(ca_pos_att_socre_layers,'/home/kzy/project/mmdetection/experiments/vis/ca_pos_att_score_layers.pth')
         if self.return_intermediate:
-            return torch.stack(intermediate), reference
+            return torch.stack(intermediate), reference,
 
         query = self.post_norm(query)
         return query.unsqueeze(0), reference
@@ -346,7 +351,7 @@ class TestModel(BaseModule):
             img_feats)  # img_feats tuple([1,256,25,38]) samples[..,img_shape=800,1199]
         # encoder_inputs_dict:{feat:[1,950,256],feat_mask:None,feat_pos[1,950,256]} decoder:{'mem_pos'[1,950,256]}
          
-        if self.with_encoder and self.with_decoder:
+        if self.with_encoder[0] and self.with_decoder[0]:
             # {'feat'[1,950=h*w,256=dim], 'feat_mask':None,'feat_pos'[1,950,256]},{memory_mask=None,'memory_pos'[1,950,256]}
             encoder_outputs_dict = self.forward_encoder(**encoder_inputs_dict) 
             # encoder_outputs_dict{'memory'[1,950,256]}
@@ -356,18 +361,19 @@ class TestModel(BaseModule):
             decoder_outputs_dict = self.forward_decoder(**decoder_inputs_dict)  #{hidden_state[6,1,300,256],reference[1,300,2]}
             head_inputs_dict.update(decoder_outputs_dict)
             return head_inputs_dict
-        elif self.with_decoder:
+        elif self.with_decoder[0]:
             # 不通过 ENcoder 了
             # encoder_outputs_dict = self.forward_encoder(**encoder_inputs_dict) {'memory'[1,950,256]}
             encoder_inputs_dict = {'memory':encoder_inputs_dict['feat']}
             tmp_dec_in, head_inputs_dict = self.pre_decoder(**encoder_inputs_dict)
             decoder_inputs_dict.update(tmp_dec_in)  # {query_pos[1,300,256],query[1,300,256],memory[1,950,256]}
             # decoder_inputs_dict {query,query_pos,memory,memory_pos}
+            # torch.save(decoder_inputs_dict,)
             decoder_outputs_dict = self.forward_decoder(**decoder_inputs_dict)  #{hidden_state[6,1,300,256],reference[1,300,2]}
             head_inputs_dict.update(decoder_outputs_dict)
-        
+                        
             return head_inputs_dict #dict{hidden_state[6,1,300,256],reference[1,300,2]}
-        elif self.with_encoder and not self.with_decoder:   # encoder only
+        elif self.with_encoder[0] and not self.with_decoder[0]:   # encoder only
             b,_,dim = encoder_inputs_dict['feat'].shape
             cls_token = nn.Parameter(torch.zeros(b,1,dim))
             pos_token = nn.Parameter(torch.zeros(b,1,dim))

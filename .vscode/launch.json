@@ -5,6 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "train reid",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "tools/train.py",
+            "console": "integratedTerminal",
+            "args": [
+                "configs/reid/reid_testmodel.py"
+            ],
+            "env": {"CUDA_VISIBLE_DEVICES":"1"
+                
+            }
+        },
+        {
             "name": "test tracking",
             "type": "debugpy",
             "request": "launch",

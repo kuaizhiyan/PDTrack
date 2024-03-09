@@ -53,8 +53,8 @@ mim install "mmcv>=2.0.0"
 Install the project to local environment.
 
 ```bash
-git clone https://anonymous.4open.science/r/PDTrack-5110
-cd PDTrack-5110
+git clone https://anonymous.4open.science/r/FARE-ECCV-5110
+cd FARE-ECCV-5110
 pip install -v -e . -r requirements/tracking.txt
 ```
 **Step 2.** Install TrackEval.
@@ -106,20 +106,20 @@ PDTrack
 ## Training 
 
 
-Train PartDecoder with 1 GPU on MOT17:
+Train FARE with 1 GPU on MOT17:
 ```
-python tools/train.py ./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py --work-dir ./experiments
-```
-
-
-Train PartDecoder with 4 GPUs on MOT17:
-```
-sh tools/dist_train.sh ./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py 4 --work-dir ./experiments
+python tools/train.py ./FARE/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py --work-dir ./experiments
 ```
 
-Train PartDecoder with 4 GPUs on MOT20:
+
+Train FARE with 4 GPUs on MOT17:
 ```
-sh tools/dist_train.sh ./PDTrack/configs/reid_PartDecoder_4xb32-2000iter_mot20train80_test-mot20val20.py 4 --work-dir ./experiments
+sh tools/dist_train.sh ./FARE/configs/reid_PartDecoder_4xb32-2000iter_mot17train80_test-mot17val20.py 4 --work-dir ./experiments
+```
+
+Train FARE with 4 GPUs on MOT20:
+```
+sh tools/dist_train.sh ./FARE/configs/reid_PartDecoder_4xb32-2000iter_mot20train80_test-mot20val20.py 4 --work-dir ./experiments
 ```
 
 Train extral detector with 8 GPUs on crowdhuman:

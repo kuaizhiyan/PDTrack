@@ -14,30 +14,30 @@ model = dict(
         type='mmpretrain.ResNet',
         depth=50,
         num_stages=4,
-        out_indices=(2,3,),
+        out_indices=(3,),
         style='pytorch',
-        # init_cfg=dict(
-        #     type='Pretrained',
-        #     checkpoint="https://download.openmmlab.com/mmclassification/v0/fp16/resnet50_batch256_fp16_imagenet_20210320-b3964210.pth"
-        # )
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint="https://download.openmmlab.com/mmclassification/v0/fp16/resnet50_batch256_fp16_imagenet_20210320-b3964210.pth"
+        )
         ),
     neck=
-        dict(
+ dict(
     type='TestModel_neck',
-        num_queries=64,
+        num_queries=33,
         with_encoder=False,
         with_decoder=True,
         with_conditionpos=True,
-        with_agg=True,
+        with_agg=False,
         channel_mapper=dict(
-            in_channels=[1024,2048],   # the output feature map dim
+            in_channels=[2048],   # the output feature map dim
             out_channels=256,
             kernel_size=1,
             norm_cfg=dict(type='BN'),
             act_cfg=dict(type='LeakyReLU')
             ),
         encoder=dict(
-            num_layers=3,
+            num_layers=4,
             layer_cfg=dict(  # DetrTransformerEncoderLayer
                 self_attn_cfg=dict(  # MultiheadAttention
                     embed_dims=256,
@@ -52,7 +52,7 @@ model = dict(
                     act_cfg=dict(type='ReLU', inplace=True)))
         ),
         decoder=dict(
-            num_layers=3,
+            num_layers=4,
             layer_cfg=dict(
                 self_attn_cfg=dict(
                     embed_dims=256,
@@ -66,7 +66,12 @@ model = dict(
                     cross_attn=True))
         ),
         positional_encoding=dict(num_feats=128, normalize=True),    # num_feats = len(x)+len(y)
-    ),
+        # init_cfg=dict(
+        #     type="Pretrained",
+        #     checkpoint="/home/kzy/project/mmdetection/work_dirs/reid_testmodel/iter_2000.pth"
+        # )
+
+),
     head=dict(
         type='LinearReIDHead',
         num_fcs=1,
@@ -156,8 +161,8 @@ log_processor = dict(by_epoch=False)
 #     val_interval=1)
 train_cfg = dict(
     type='IterBasedTrainLoop',
-    max_iters=140000,
-    val_interval=1000,
+    max_iters=100000,
+    val_interval=10000,
 )
 #     type='EpochBasedTrainLoop',
 #     max_epochs=80,
